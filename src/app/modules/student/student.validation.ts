@@ -23,7 +23,10 @@ const guardianValidationSchema = z.object({
 });
 
 const localGuardianValidationSchema = z.object({
-  name: z.string().min(1),
+  name: z
+    .string()
+    .max(20, { message: "password can not be more than 20 characters" })
+    .min(1),
   occupation: z.string().min(1),
   contact: z.string().min(1),
   address: z.string().min(1),
@@ -33,6 +36,7 @@ const localGuardianValidationSchema = z.object({
 
 const studentValidationSchema = z.object({
   id: z.string().min(1),
+  password: z.string().min(1),
   name: userNameValidationSchema,
   gender: z.enum(["male", "female", "other"]),
   dateOfBirth: z.string(),
@@ -48,6 +52,7 @@ const studentValidationSchema = z.object({
   localGuardian: localGuardianValidationSchema,
   profileImg: z.string(),
   isActive: z.enum(["active", "blocked"]).default("active"),
+  isDeleted: z.boolean(),
 });
 
 export { studentValidationSchema };
