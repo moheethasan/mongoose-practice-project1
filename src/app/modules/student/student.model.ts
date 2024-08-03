@@ -4,13 +4,9 @@ import {
   TLocalGuardian,
   TStudent,
   StudentCustomModel,
-  // StudentMethod,
   TUserName,
 } from "./student.interface";
 import validator from "validator";
-import bcrypt from "bcrypt";
-import config from "../../config";
-// import { string } from "joi";
 
 // create schema
 
@@ -51,10 +47,11 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, StudentCustomModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: {
-      type: String,
+    user: {
+      type: Schema.Types.ObjectId,
       required: true,
-      maxlength: [20, "password can not be more than 20 characters"],
+      unique: true,
+      ref: "User",
     },
     name: {
       type: userNameSchema,
@@ -95,11 +92,6 @@ const studentSchema = new Schema<TStudent, StudentCustomModel>(
       required: true,
     },
     profileImg: String,
-    isActive: {
-      type: String,
-      enum: ["active", "blocked"],
-      default: "active",
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -115,28 +107,6 @@ const studentSchema = new Schema<TStudent, StudentCustomModel>(
 // ---> virtual <---
 studentSchema.virtual("fullName").get(function () {
   return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
-
-// ---> Document middleware <---
-
-//pre save middleware / hook : will word on create() or save()
-
-studentSchema.pre("save", async function (next) {
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const user = this; //refers current document
-  //hashing password and save into DB
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_rounds)
-  );
-  next();
-});
-
-//post save middleware / hook
-
-studentSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
 });
 
 // ---> Query middleware <---

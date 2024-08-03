@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { z } from "zod";
 
 // Define Zod validation schemas for the nested objects first
@@ -36,7 +37,7 @@ const localGuardianValidationSchema = z.object({
 
 const studentValidationSchema = z.object({
   id: z.string().min(1),
-  password: z.string().min(1),
+  user: z.custom<mongoose.Types.ObjectId>(),
   name: userNameValidationSchema,
   gender: z.enum(["male", "female", "other"]),
   dateOfBirth: z.string(),
@@ -51,7 +52,6 @@ const studentValidationSchema = z.object({
   guardian: guardianValidationSchema,
   localGuardian: localGuardianValidationSchema,
   profileImg: z.string(),
-  isActive: z.enum(["active", "blocked"]).default("active"),
   isDeleted: z.boolean(),
 });
 
