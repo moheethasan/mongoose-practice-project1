@@ -91,6 +91,11 @@ const studentSchema = new Schema<TStudent, StudentCustomModel>(
       type: localGuardianSchema,
       required: true,
     },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "AcademicSemester",
+    },
     profileImg: String,
     isDeleted: {
       type: Boolean,
