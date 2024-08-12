@@ -54,6 +54,7 @@ const createStudentValidationSchema = z.object({
       guardian: guardianValidationSchema,
       localGuardian: localGuardianValidationSchema,
       admissionSemester: z.custom<mongoose.Types.ObjectId>(),
+      academicDepartment: z.custom<mongoose.Types.ObjectId>(),
       profileImg: z.string(),
     }),
   }),
