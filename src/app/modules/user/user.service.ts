@@ -8,8 +8,17 @@ import { TUser } from "./user.interface";
 import { UserModel } from "./user.model";
 import { generateStudentId } from "./user.utils";
 import mongoose from "mongoose";
+import { AcademicDepartmentModel } from "../academicDepartment/academicDepartment.model";
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
+  // Check if semester and department fields are present
+  if (!studentData.admissionSemester || !studentData.academicDepartment) {
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "Academic Department and Admission Semester are required"
+    );
+  }
+
   //create a user object
   const userData: Partial<TUser> = {};
 
@@ -23,9 +32,16 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   const admissionSemester = await AcademicSemesterModel.findById(
     studentData.admissionSemester
   );
-
   if (!admissionSemester) {
     throw new AppError(httpStatus.NOT_FOUND, "Admission semester not found!");
+  }
+
+  // check if academic department is there
+  const academicDepartment = await AcademicDepartmentModel.findById(
+    studentData.academicDepartment
+  );
+  if (!academicDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, "Academic department not found!");
   }
 
   const session = await mongoose.startSession();
@@ -61,6 +77,7 @@ const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to create student!");
   }
 };
 

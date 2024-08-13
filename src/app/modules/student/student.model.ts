@@ -1,12 +1,14 @@
 import { Schema, model } from "mongoose";
 import {
+  StudentCustomModel,
   TGuardian,
   TLocalGuardian,
   TStudent,
-  StudentCustomModel,
   TUserName,
 } from "./student.interface";
 import validator from "validator";
+// import AppError from "../../errors/AppError";
+// import httpStatus from "http-status";
 
 // create schema
 
@@ -93,12 +95,12 @@ const studentSchema = new Schema<TStudent, StudentCustomModel>(
     },
     admissionSemester: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: [true, "Admission Semester is required"],
       ref: "AcademicSemester",
     },
     academicDepartment: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: [true, "Academic Department is required"],
       ref: "AcademicDepartment",
     },
     profileImg: String,
@@ -131,15 +133,25 @@ studentSchema.pre("findOne", function (next) {
   next();
 });
 
-studentSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
+// studentSchema.pre("findOneAndUpdate", async function (next) {
+//   const query = this.getQuery();
+
+//   const isStudentExists = await StudentModel.findOne({ query });
+//   if (!isStudentExists) {
+//     throw new AppError(httpStatus.NOT_FOUND, "Student does not exists!");
+//   }
+//   next();
+// });
+
+// studentSchema.pre("aggregate", function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
 
 // for static method
-studentSchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await StudentModel.findOne({ id });
-  return existingUser;
+studentSchema.statics.isStudentExists = async function (id: string) {
+  const existingStudent = await StudentModel.findOne({ id });
+  return existingStudent;
 };
 
 // for instance method
