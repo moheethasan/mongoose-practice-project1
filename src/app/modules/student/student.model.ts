@@ -7,6 +7,7 @@ import {
   TUserName,
 } from "./student.interface";
 import validator from "validator";
+import { BloodGroup, Gender } from "./student.constant";
 // import AppError from "../../errors/AppError";
 // import httpStatus from "http-status";
 
@@ -48,26 +49,26 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 
 const studentSchema = new Schema<TStudent, StudentCustomModel>(
   {
-    id: { type: String, required: true, unique: true },
+    id: { type: String, required: [true, "ID is required!"], unique: true },
     user: {
       type: Schema.Types.ObjectId,
-      required: true,
+      required: [true, "User is required!"],
       unique: true,
       ref: "User",
     },
     name: {
       type: userNameSchema,
-      required: true,
+      required: [true, "Name is required!"],
     },
     gender: {
       type: String,
       enum: {
-        values: ["male", "female", "other"],
-        message: "{VALUE} is not valid",
+        values: Gender,
+        message: "{VALUE} is not valid gender",
       },
       required: true,
     },
-    dateOfBirth: String,
+    dateOfBirth: { type: String },
     email: {
       type: String,
       required: true,
@@ -77,21 +78,36 @@ const studentSchema = new Schema<TStudent, StudentCustomModel>(
         message: "{VALUE} is not an valid email",
       },
     },
-    contactNo: { type: String, required: true },
-    emergencyContactNo: { type: String, required: true },
+    contactNo: {
+      type: String,
+      required: [true, "Contact number is required!"],
+    },
+    emergencyContactNo: {
+      type: String,
+      required: [true, "Emergency contact number is required"],
+    },
     bloodGroup: {
       type: String,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      enum: {
+        values: BloodGroup,
+        message: "{VALUE} is not a valid blood group",
+      },
     },
-    presentAddress: { type: String, required: true },
-    permanentAddress: { type: String, required: true },
+    presentAddress: {
+      type: String,
+      required: [true, "Present address is required"],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, "Permanent address is required"],
+    },
     guardian: {
       type: guardianSchema,
-      required: true,
+      required: [true, "Guardian information is required"],
     },
     localGuardian: {
       type: localGuardianSchema,
-      required: true,
+      required: [true, "Local guardian information is required"],
     },
     admissionSemester: {
       type: Schema.Types.ObjectId,
@@ -103,7 +119,7 @@ const studentSchema = new Schema<TStudent, StudentCustomModel>(
       required: [true, "Academic Department is required"],
       ref: "AcademicDepartment",
     },
-    profileImg: String,
+    profileImg: { type: String },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -132,6 +148,8 @@ studentSchema.pre("findOne", function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
+
+//didn't worked
 
 // studentSchema.pre("findOneAndUpdate", async function (next) {
 //   const query = this.getQuery();

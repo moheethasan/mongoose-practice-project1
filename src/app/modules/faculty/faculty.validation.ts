@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 import { z } from "zod";
-import { BloodGroup, Gender } from "./student.constant";
-
-// Define Zod validation schemas for the nested objects first
+import { BloodGroup, Gender } from "./faculty.constant";
 
 const createUserNameValidationSchema = z.object({
   firstName: z
@@ -27,51 +25,13 @@ const updateUserNameValidationSchema = z.object({
   lastName: z.string().min(1, { message: "last name is required" }).optional(),
 });
 
-const createGuardianValidationSchema = z.object({
-  fatherName: z.string().min(1),
-  fatherOccupation: z.string().min(1),
-  fatherContactNo: z.string().min(1),
-  motherName: z.string().min(1),
-  motherOccupation: z.string().min(1),
-  motherContactNo: z.string().min(1),
-});
+// Define Zod validation schema for the Faculty object
 
-const updateGuardianValidationSchema = z.object({
-  fatherName: z.string().min(1).optional(),
-  fatherOccupation: z.string().min(1).optional(),
-  fatherContactNo: z.string().min(1).optional(),
-  motherName: z.string().min(1).optional(),
-  motherOccupation: z.string().min(1).optional(),
-  motherContactNo: z.string().min(1).optional(),
-});
-
-const createLocalGuardianValidationSchema = z.object({
-  name: z
-    .string()
-    .max(20, { message: "password can not be more than 20 characters" })
-    .min(1),
-  occupation: z.string().min(1),
-  contact: z.string().min(1),
-  address: z.string().min(1),
-});
-
-const updateLocalGuardianValidationSchema = z.object({
-  name: z
-    .string()
-    .max(20, { message: "password can not be more than 20 characters" })
-    .min(1)
-    .optional(),
-  occupation: z.string().min(1).optional(),
-  contact: z.string().min(1).optional(),
-  address: z.string().min(1).optional(),
-});
-
-// Define Zod validation schema for the Student object
-
-const createStudentValidationSchema = z.object({
+const createFacultyValidationSchema = z.object({
   body: z.object({
     password: z.string().max(20).optional(),
-    student: z.object({
+    faculty: z.object({
+      designation: z.string(),
       name: createUserNameValidationSchema,
       gender: z.enum(Gender as [string, ...string[]]),
       dateOfBirth: z.string().optional(),
@@ -81,13 +41,6 @@ const createStudentValidationSchema = z.object({
       bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
       presentAddress: z.string().min(1),
       permanentAddress: z.string().min(1),
-      guardian: createGuardianValidationSchema,
-      localGuardian: createLocalGuardianValidationSchema,
-      admissionSemester: z
-        .custom<mongoose.Types.ObjectId>()
-        .refine((value) => value !== null, {
-          message: "Admission Semester is required",
-        }),
       academicDepartment: z
         .custom<mongoose.Types.ObjectId>()
         .refine((value) => value !== null, {
@@ -98,12 +51,13 @@ const createStudentValidationSchema = z.object({
   }),
 });
 
-// Define Zod validation schema for the Student object for update
+// Define Zod validation schema for the Faculty object for update
 
-const updateStudentValidationSchema = z.object({
+const updateFacultyValidationSchema = z.object({
   body: z.object({
-    student: z
+    faculty: z
       .object({
+        designation: z.string().optional(),
         name: updateUserNameValidationSchema.optional(),
         gender: z.enum(Gender as [string, ...string[]]).optional(),
         dateOfBirth: z.string().optional(),
@@ -116,15 +70,6 @@ const updateStudentValidationSchema = z.object({
         bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
         presentAddress: z.string().min(1).optional(),
         permanentAddress: z.string().min(1).optional(),
-        guardian: updateGuardianValidationSchema.optional(),
-        localGuardian: updateLocalGuardianValidationSchema.optional(),
-        admissionSemester: z
-          .custom<mongoose.Types.ObjectId>()
-          .optional()
-          .refine((value) => value !== null, {
-            message: "Admission Semester is required",
-          })
-          .optional(),
         academicDepartment: z
           .custom<mongoose.Types.ObjectId>()
           .optional()
@@ -134,11 +79,11 @@ const updateStudentValidationSchema = z.object({
           .optional(),
         profileImg: z.string().optional(),
       })
-      .partial(), // Mark all fields in the student object as optional
+      .partial(), // Mark all fields in the Faculty object as optional
   }),
 });
 
-export const studentValidations = {
-  createStudentValidationSchema,
-  updateStudentValidationSchema,
+export const facultyValidations = {
+  createFacultyValidationSchema,
+  updateFacultyValidationSchema,
 };
