@@ -45,12 +45,24 @@ export const generateStudentId = async (
 
 export const generateFacultyId = async () => {
   let currentId = (0).toString(); //default id
-  const lastStudentId = await findLastUserId("faculty");
-  if (lastStudentId) {
-    currentId = lastStudentId.substring(2);
+  const lastFacultyId = await findLastUserId("faculty");
+  if (lastFacultyId) {
+    currentId = lastFacultyId.substring(2);
   }
 
   let incrementId = (Number(currentId) + 1).toString().padStart(4, "0");
   incrementId = `F-${incrementId}`;
+  return incrementId;
+};
+
+export const generateAdminId = async () => {
+  let currentId = (0).toString(); //default id
+  const lastAdminId = await findLastUserId("admin");
+  if (lastAdminId) {
+    currentId = lastAdminId.substring(2);
+  }
+
+  let incrementId = (Number(currentId) + 1).toString().padStart(4, "0");
+  incrementId = `A-${incrementId}`;
   return incrementId;
 };

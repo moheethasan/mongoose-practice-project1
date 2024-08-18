@@ -155,7 +155,7 @@ const deleteStudentFromDB = async (id: string) => {
     session.startTransaction();
 
     const deletedStudent = await StudentModel.findByIdAndUpdate(
-      { id },
+      id,
       { isDeleted: true },
       { new: true, session }
     );
@@ -164,8 +164,11 @@ const deleteStudentFromDB = async (id: string) => {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student!");
     }
 
+    // get user _id from deletedFaculty
+    const userId = deletedStudent.user;
+
     const deletedUser = await UserModel.findByIdAndUpdate(
-      { id },
+      userId,
       { isDeleted: true },
       { new: true, session }
     );

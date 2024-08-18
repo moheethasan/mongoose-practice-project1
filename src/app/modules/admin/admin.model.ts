@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
-import { FacultyCustomModel, TFaculty, TUserName } from "./faculty.interface";
-import { BloodGroup, Gender } from "./faculty.constant";
 import validator from "validator";
+import { AdminCustomModel, TAdmin, TUserName } from "./admin.interface";
+import { BloodGroup, Gender } from "./admin.constant";
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -21,7 +21,7 @@ const userNameSchema = new Schema<TUserName>({
   lastName: { type: String, required: [true, "last name is required"] },
 });
 
-export const facultySchema = new Schema<TFaculty, FacultyCustomModel>(
+export const adminSchema = new Schema<TAdmin, AdminCustomModel>(
   {
     id: { type: String, required: [true, "ID is required!"], unique: true },
     user: {
@@ -76,11 +76,6 @@ export const facultySchema = new Schema<TFaculty, FacultyCustomModel>(
       type: String,
       required: [true, "Permanent address is required"],
     },
-    academicDepartment: {
-      type: Schema.Types.ObjectId,
-      required: [true, "Academic Department is required"],
-      ref: "AcademicDepartment",
-    },
     profileImg: { type: String },
     isDeleted: {
       type: Boolean,
@@ -94,26 +89,23 @@ export const facultySchema = new Schema<TFaculty, FacultyCustomModel>(
   }
 );
 
-facultySchema.virtual("fullName").get(function () {
+adminSchema.virtual("fullName").get(function () {
   return `${this.name?.firstName} ${this.name?.middleName} ${this.name?.lastName}`;
 });
 
-facultySchema.pre("find", function (next) {
+adminSchema.pre("find", function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
 
-facultySchema.pre("findOne", function (next) {
+adminSchema.pre("findOne", function (next) {
   this.find({ isDeleted: { $ne: true } });
   next();
 });
 
-facultySchema.statics.isFacultyExists = async function (id: string) {
-  const existingFaculty = await FacultyModel.findById(id);
-  return existingFaculty;
+adminSchema.statics.isAdminExists = async function (id: string) {
+  const existingAdmin = await AdminModel.findById(id);
+  return existingAdmin;
 };
 
-export const FacultyModel = model<TFaculty, FacultyCustomModel>(
-  "Faculty",
-  facultySchema
-);
+export const AdminModel = model<TAdmin, AdminCustomModel>("Admin", adminSchema);

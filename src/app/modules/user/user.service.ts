@@ -6,11 +6,17 @@ import { TStudent } from "../student/student.interface";
 import { StudentModel } from "../student/student.model";
 import { TUser } from "./user.interface";
 import { UserModel } from "./user.model";
-import { generateFacultyId, generateStudentId } from "./user.utils";
+import {
+  generateAdminId,
+  generateFacultyId,
+  generateStudentId,
+} from "./user.utils";
 import mongoose from "mongoose";
 import { AcademicDepartmentModel } from "../academicDepartment/academicDepartment.model";
 import { TFaculty } from "../faculty/faculty.interface";
 import { FacultyModel } from "../faculty/faculty.model";
+import { TAdmin } from "../admin/admin.interface";
+import { AdminModel } from "../admin/admin.model";
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
   // Check if semester and department fields are present
@@ -134,7 +140,46 @@ const createFacultyIntoDB = async (password: string, facultyData: TFaculty) => {
   }
 };
 
+const createAdminIntoDB = async (password: string, adminData: TAdmin) => {
+  const userData: Partial<TUser> = {};
+  userData.password = password || (config.default_password as string);
+  userData.role = "admin";
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    userData.id = await generateAdminId();
+    //create a user (transaction-1)
+    const newUser = await UserModel.create([userData], { session });
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user!");
+    }
+
+    adminData.id = newUser[0].id;
+    adminData.user = newUser[0]._id;
+
+    //create a student (transaction-2)
+    const newAdmin = await AdminModel.create([adminData], { session });
+
+    if (!newAdmin.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create admin!");
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newAdmin;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to create admin!");
+  }
+};
+
 export const UserServices = {
   createStudentIntoDB,
   createFacultyIntoDB,
+  createAdminIntoDB,
 };
