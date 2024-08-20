@@ -16,11 +16,23 @@ router.get("/", CourseControllers.getAllCourses);
 
 router.get("/:id", CourseControllers.getSingleCourse);
 
-// router.patch(
-//   "/:id",
-//   validateRequest(facultyValidations.updateFacultyValidationSchema),
-//   CourseControllers.updateFaculty
-// );
+router.patch(
+  "/:id",
+  validateRequest(courseValidations.updateCourseValidationSchema),
+  CourseControllers.updateCourse
+);
+
+router.put(
+  "/:courseId/assign-faculties",
+  validateRequest(courseValidations.courseFacultyValidationSchema),
+  CourseControllers.assignCourseFaculties
+);
+
+router.delete(
+  "/:courseId/remove-faculties",
+  validateRequest(courseValidations.courseFacultyValidationSchema),
+  CourseControllers.removeCourseFaculties
+);
 
 router.delete("/:id", CourseControllers.deleteCourse);
 

@@ -49,24 +49,22 @@ const createAdminValidationSchema = z.object({
 
 const updateAdminValidationSchema = z.object({
   body: z.object({
-    admin: z
-      .object({
-        designation: z.string().optional(),
-        name: updateUserNameValidationSchema.optional(),
-        gender: z.enum(Gender as [string, ...string[]]).optional(),
-        dateOfBirth: z.string().optional(),
-        email: z
-          .string()
-          .email({ message: "email is not a valid email" })
-          .optional(),
-        contactNo: z.string().min(1).optional(),
-        emergencyContactNo: z.string().min(1).optional(),
-        bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
-        presentAddress: z.string().min(1).optional(),
-        permanentAddress: z.string().min(1).optional(),
-        profileImg: z.string().optional(),
-      })
-      .partial(), // Mark all fields in the Admin object as optional
+    admin: z.object({
+      designation: z.string().optional(),
+      name: updateUserNameValidationSchema.optional(),
+      gender: z.enum(Gender as [string, ...string[]]).optional(),
+      dateOfBirth: z.string().optional(),
+      email: z
+        .string()
+        .email({ message: "email is not a valid email" })
+        .optional(),
+      contactNo: z.string().min(1).optional(),
+      emergencyContactNo: z.string().min(1).optional(),
+      bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
+      presentAddress: z.string().min(1).optional(),
+      permanentAddress: z.string().min(1).optional(),
+      profileImg: z.string().optional(),
+    }),
   }),
 });
 

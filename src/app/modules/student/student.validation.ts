@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { z } from "zod";
 import { BloodGroup, Gender } from "./student.constant";
 
@@ -84,14 +84,14 @@ const createStudentValidationSchema = z.object({
       guardian: createGuardianValidationSchema,
       localGuardian: createLocalGuardianValidationSchema,
       admissionSemester: z
-        .custom<mongoose.Types.ObjectId>()
-        .refine((value) => value !== null, {
-          message: "Admission Semester is required",
+        .string()
+        .refine((val) => Types.ObjectId.isValid(val), {
+          message: "Invalid ObjectId",
         }),
       academicDepartment: z
-        .custom<mongoose.Types.ObjectId>()
-        .refine((value) => value !== null, {
-          message: "Academic Department is required",
+        .string()
+        .refine((val) => Types.ObjectId.isValid(val), {
+          message: "Invalid ObjectId",
         }),
       profileImg: z.string(),
     }),
@@ -102,39 +102,35 @@ const createStudentValidationSchema = z.object({
 
 const updateStudentValidationSchema = z.object({
   body: z.object({
-    student: z
-      .object({
-        name: updateUserNameValidationSchema.optional(),
-        gender: z.enum(Gender as [string, ...string[]]).optional(),
-        dateOfBirth: z.string().optional(),
-        email: z
-          .string()
-          .email({ message: "email is not a valid email" })
-          .optional(),
-        contactNo: z.string().min(1).optional(),
-        emergencyContactNo: z.string().min(1).optional(),
-        bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
-        presentAddress: z.string().min(1).optional(),
-        permanentAddress: z.string().min(1).optional(),
-        guardian: updateGuardianValidationSchema.optional(),
-        localGuardian: updateLocalGuardianValidationSchema.optional(),
-        admissionSemester: z
-          .custom<mongoose.Types.ObjectId>()
-          .optional()
-          .refine((value) => value !== null, {
-            message: "Admission Semester is required",
-          })
-          .optional(),
-        academicDepartment: z
-          .custom<mongoose.Types.ObjectId>()
-          .optional()
-          .refine((value) => value !== null, {
-            message: "Academic Department is required",
-          })
-          .optional(),
-        profileImg: z.string().optional(),
-      })
-      .partial(), // Mark all fields in the student object as optional
+    student: z.object({
+      name: updateUserNameValidationSchema.optional(),
+      gender: z.enum(Gender as [string, ...string[]]).optional(),
+      dateOfBirth: z.string().optional(),
+      email: z
+        .string()
+        .email({ message: "email is not a valid email" })
+        .optional(),
+      contactNo: z.string().min(1).optional(),
+      emergencyContactNo: z.string().min(1).optional(),
+      bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
+      presentAddress: z.string().min(1).optional(),
+      permanentAddress: z.string().min(1).optional(),
+      guardian: updateGuardianValidationSchema.optional(),
+      localGuardian: updateLocalGuardianValidationSchema.optional(),
+      admissionSemester: z
+        .string()
+        .refine((val) => Types.ObjectId.isValid(val), {
+          message: "Invalid ObjectId",
+        })
+        .optional(),
+      academicDepartment: z
+        .string()
+        .refine((val) => Types.ObjectId.isValid(val), {
+          message: "Invalid ObjectId",
+        })
+        .optional(),
+      profileImg: z.string().optional(),
+    }),
   }),
 });
 

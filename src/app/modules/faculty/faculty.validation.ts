@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import { Types } from "mongoose";
 import { z } from "zod";
 import { BloodGroup, Gender } from "./faculty.constant";
 
@@ -42,9 +42,9 @@ const createFacultyValidationSchema = z.object({
       presentAddress: z.string().min(1),
       permanentAddress: z.string().min(1),
       academicDepartment: z
-        .custom<mongoose.Types.ObjectId>()
-        .refine((value) => value !== null, {
-          message: "Academic Department is required",
+        .string()
+        .refine((val) => Types.ObjectId.isValid(val), {
+          message: "Invalid ObjectId",
         }),
       profileImg: z.string(),
     }),
@@ -55,31 +55,28 @@ const createFacultyValidationSchema = z.object({
 
 const updateFacultyValidationSchema = z.object({
   body: z.object({
-    faculty: z
-      .object({
-        designation: z.string().optional(),
-        name: updateUserNameValidationSchema.optional(),
-        gender: z.enum(Gender as [string, ...string[]]).optional(),
-        dateOfBirth: z.string().optional(),
-        email: z
-          .string()
-          .email({ message: "email is not a valid email" })
-          .optional(),
-        contactNo: z.string().min(1).optional(),
-        emergencyContactNo: z.string().min(1).optional(),
-        bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
-        presentAddress: z.string().min(1).optional(),
-        permanentAddress: z.string().min(1).optional(),
-        academicDepartment: z
-          .custom<mongoose.Types.ObjectId>()
-          .optional()
-          .refine((value) => value !== null, {
-            message: "Academic Department is required",
-          })
-          .optional(),
-        profileImg: z.string().optional(),
-      })
-      .partial(), // Mark all fields in the Faculty object as optional
+    faculty: z.object({
+      designation: z.string().optional(),
+      name: updateUserNameValidationSchema.optional(),
+      gender: z.enum(Gender as [string, ...string[]]).optional(),
+      dateOfBirth: z.string().optional(),
+      email: z
+        .string()
+        .email({ message: "email is not a valid email" })
+        .optional(),
+      contactNo: z.string().min(1).optional(),
+      emergencyContactNo: z.string().min(1).optional(),
+      bloodGroup: z.enum(BloodGroup as [string, ...string[]]).optional(),
+      presentAddress: z.string().min(1).optional(),
+      permanentAddress: z.string().min(1).optional(),
+      academicDepartment: z
+        .string()
+        .refine((val) => Types.ObjectId.isValid(val), {
+          message: "Invalid ObjectId",
+        })
+        .optional(),
+      profileImg: z.string().optional(),
+    }),
   }),
 });
 

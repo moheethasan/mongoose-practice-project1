@@ -14,7 +14,7 @@ const createCourse = catchAsync(async (req, res) => {
 });
 
 const getAllCourses = catchAsync(async (req, res) => {
-  const result = await CourseServices.getAllCoursesFromDB();
+  const result = await CourseServices.getAllCoursesFromDB(req.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -35,19 +35,52 @@ const getSingleCourse = catchAsync(async (req, res) => {
   });
 });
 
-// const updateAdmin = catchAsync(async (req, res) => {
-//     const { id } = req.params;
-//     const { admin } = req.body;
+const updateCourse = catchAsync(async (req, res) => {
+  const { id } = req.params;
 
-//     const result = await AdminServices.updateAdminInDB(id, admin);
+  const result = await CourseServices.updateCourseInDB(id, req.body);
 
-//     sendResponse(res, {
-//       statusCode: httpStatus.OK,
-//       success: true,
-//       message: "Admin is updated successfully",
-//       data: result,
-//     });
-//   });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course is updated successfully",
+    data: result,
+  });
+});
+
+const assignCourseFaculties = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const { faculties } = req.body;
+
+  const result = await CourseServices.assignCourseFacultiesIntoDB(
+    courseId,
+    faculties
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Assigned Course faculties successfully",
+    data: result,
+  });
+});
+
+const removeCourseFaculties = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const { faculties } = req.body;
+
+  const result = await CourseServices.removeCourseFacultiesFromDB(
+    courseId,
+    faculties
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Removed Course faculties successfully",
+    data: result,
+  });
+});
 
 const deleteCourse = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -66,5 +99,8 @@ export const CourseControllers = {
   createCourse,
   getAllCourses,
   getSingleCourse,
+  updateCourse,
+  assignCourseFaculties,
+  removeCourseFaculties,
   deleteCourse,
 };
