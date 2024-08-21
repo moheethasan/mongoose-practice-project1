@@ -15,6 +15,7 @@ const createOfferedCourseIntoDB = async (offeredCourseData: TOfferedCourse) => {
     academicDepartment,
     course,
     faculty,
+    section,
   } = offeredCourseData;
 
   //apply validations
@@ -39,6 +40,16 @@ const createOfferedCourseIntoDB = async (offeredCourseData: TOfferedCourse) => {
   if (!isAcademicDepartmentExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Academic department not found!");
   }
+  //is the department belong to the faculty
+  if (
+    isAcademicDepartmentExists.academicFaculty.toString() !==
+    isAcademicFacultyExists._id.toString()
+  ) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `${isAcademicDepartmentExists.name} doesn't belong to ${isAcademicFacultyExists.name}!`
+    );
+  }
   const isCourseExists = await CourseModel.findById(course);
   if (!isCourseExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Course not found!");
@@ -46,6 +57,18 @@ const createOfferedCourseIntoDB = async (offeredCourseData: TOfferedCourse) => {
   const isFacultyExists = await FacultyModel.findById(faculty);
   if (!isFacultyExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Faculty not found!");
+  }
+  //check if the section of offered course are same
+  const isSameSection = await OfferedCourseModel.findOne({
+    semesterRegistration,
+    course,
+    section,
+  });
+  if (isSameSection) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Offered course with same section already exists!"
+    );
   }
 
   offeredCourseData.academicSemester =

@@ -5,7 +5,6 @@ import { Days } from "./offeredCourse.constant";
 const offeredCourseSchema = new Schema<TOfferedCourse>({
   semesterRegistration: {
     type: Schema.Types.ObjectId,
-    unique: true,
     ref: "SemesterRegistration",
     required: [true, "Semester Registration is required!"],
   },
