@@ -19,14 +19,6 @@ import { TAdmin } from "../admin/admin.interface";
 import { AdminModel } from "../admin/admin.model";
 
 const createStudentIntoDB = async (password: string, studentData: TStudent) => {
-  // Check if semester and department fields are present
-  if (!studentData.admissionSemester || !studentData.academicDepartment) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "Academic Department and Admission Semester are required"
-    );
-  }
-
   //create a user object
   const userData: Partial<TUser> = {};
 
