@@ -241,8 +241,6 @@ const deleteOfferedCourseFromDB = async (id: string) => {
   return result;
 };
 
-//task---> semester registration - delete when upcoming and delete offered course first then delete semester registration.
-
 export const OfferedCourseServices = {
   createOfferedCourseIntoDB,
   getAllOfferedCoursesFromDB,
