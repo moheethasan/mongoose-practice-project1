@@ -17,6 +17,10 @@ export interface UserCustomModel extends Model<TUser> {
     plainTextPassword: string,
     hashedPassword: string
   ): Promise<boolean>;
+  isJwtIssuedBeforePasswordChanged(
+    passwordChangedTimestamp: Date,
+    jwtIssuedTimestamp: number
+  ): Promise<boolean>;
 }
 
 export type TUserRole = keyof typeof userRole;
