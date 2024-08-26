@@ -2,11 +2,12 @@ import express from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import { AdminControllers } from "./admin.controller";
 import { adminValidations } from "./admin.validation";
+import auth from "../../middlewares/auth";
 
 const router = express.Router();
 
 // call controller function
-router.get("/", AdminControllers.getAllAdmins);
+router.get("/", auth(), AdminControllers.getAllAdmins);
 
 router.get("/:id", AdminControllers.getSingleAdmin);
 
